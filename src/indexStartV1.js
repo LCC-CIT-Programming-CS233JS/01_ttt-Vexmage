@@ -28,7 +28,7 @@ function init()
 
 function handleClick() {
     var index = parseInt(this.id);
-    // 🎃 👻
+    // 🎃 👻 swapped out the X's and O's with Pumpkins and Ghosts
     if (xIsNext) {
         squares[index] = "🎃";
     } else {
