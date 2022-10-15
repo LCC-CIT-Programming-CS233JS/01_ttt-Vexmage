@@ -1,122 +1,131 @@
-// start with these global variables
-var xIsNext = true;
-var winner = null;
-var squares = Array(9).fill(null);
-var winningLine = Array();
-var lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-    ];
-
-function init()
+// Create a class called TTT
+class TTT
 {
-    var squares = document.getElementsByName("square");
-    for (var i = 0; i < squares.length; i++) {
-        squares[i].onclick = handleClick;
+    /*
+        Add a constructor that 
+        -   defines and initializes all variables
+        -   binds the keyword this to the class for each function because
+            this will otherwise will refer to the clicked square
+            -   this.calculateWinner = this.calculateWinner.bind(this);
+            -   DON'T bind this for handleClick at this point
+        -   calls the init method
+    */
+    constructor() {
+        this.xIsNext = true;
+        this.winner = null;
+        this.squares = Array(9).fill(null);
+        this.winningLine = Array();
+        this.lines = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+            ];
+
+        this.init();
     }
-    // Functions can be variables -- a strength of javascript! Easy assignments.
-    // Add an onclick handler to all of the squares
-    // The name attribute for all of the divs is square
-    // Use the function handleClick to handle the event 
-}
+    /*
+        Convert each function to a method
+        -   move it inside the class
+        -   remove the keyword function
+        -   add this to all of the variables that belong to the class
+        -   change var to let or const for local variables
+        -   add this to all method calls */
 
-function handleClick() {
-    var index = parseInt(this.id);
-    // 🎃 👻 swapped out the X's and O's with Pumpkins and Ghosts
-    if (xIsNext) {
-        squares[index] = "🎃";
-    } else {
-        squares[index] = "👻";
+    init() {
+        let squares = document.getElementsByName("square");
+        for (let i = 0; i < squares.length; i++) {
+            squares[i].onclick = this.handleClick.bind(this, i);
+        }
     }
-    this.innerHTML = squares[index];
 
-
-    // Get the id from the square and put it in a variable
-    // Remember that the id is an integer 0 - 8
-
-    // Set the element in the squares array to the player's symbol
-    // Update the inner html for this square in the UI
-
-    // Set the onclick handler for this square in the UI to an empty anonymous function or arrow function
-    // Update the variable xIsNext
-
-    this.onclick = function() {}
-
-    xIsNext = !xIsNext;
-
-    // If calculateWinner returns true
-    // highlight the winner and disable all of the squares
-    // otherwise update the status in the UI to display the player
-
-    var statusElement = document.getElementById("status");
-
-    if (calculateWinner()) {
-        highlightWinner();
-        disableAll();
-    } else {
-        if (xIsNext) {
-            statusElement.innerHTML = "🎃 next player";
+    handleClick(index) {
+        // 🎃 👻 swapped out the X's and O's with Pumpkins and Ghosts
+        if (this.xIsNext) {
+            this.squares[index] = "🎃";
         } else {
-            statusElement.innerHTML = "👻 next player";
+            this.squares[index] = "👻";
+        }
+
+        let squareElement = document.getElementById(index);
+        squareElement.innerHTML = this.squares[index];
+
+        squareElement.onclick = () => {}
+
+        this.xIsNext = !this.xIsNext;
+
+        let statusElement = document.getElementById("status");
+
+        if (this.calculateWinner()) {
+            this.highlightWinner();
+            this.disableAll();
+        } else {
+            if (this.xIsNext) {
+                statusElement.innerHTML = "🎃 next player";
+            } else {
+                statusElement.innerHTML = "👻 next player";
+            }
         }
     }
-}
 
-function calculateWinner() {
-    for (var i = 0; i < lines.length; i++) {
-        var a = lines[i][0];
-        var b = lines[i][1];
-        var c = lines[i][2];       
-        if (squares[a] && 
-        squares[a] === squares[b] && 
-        squares[a] === squares[c]) {
-            winner = squares[a];
-            winningLine = lines[i];
-            return true;
+    calculateWinner() {
+        for (let i = 0; i < this.lines.length; i++) {
+            let [a, b, c] = this.lines[i];
+            if (this.squares[a] && 
+            this.squares[a] === this.squares[b] && 
+            this.squares[a] === this.squares[c]) {
+                this.winner = this.squares[a];
+                this.winningLine = this.lines[i];
+                return true;
+            }
+        }
+        this.winner = null;
+        this.winningLine = Array();
+        return false;
+    }
+
+    highlightWinner() {
+        if (this.xIsNext) {
+            document.getElementById("status").innerHTML = "👻 WINS!!";
+        } else {
+            document.getElementById("status").innerHTML = "🎃 WINS!!";
+        }
+        for (let i = 0; i < this.winningLine.length; i++) {
+            let squareIndex = this.winningLine[i];
+            document.getElementById(squareIndex).classList.add("red");
         }
     }
-    winner = null;
-    winningLine = Array();
-    return false;
+
+    disableAll() {
+        for (let i = 0; i < this.squares.length; i++) {
+            document.getElementById(i).onclick = () => {};
+        } 
+    }
+    
+
+/*
+        Init
+        -   bind both this and i to handleClick
+            -   this.handleClick.bind(this, i);
+
+        CalculateWinner
+        -   use destructuring assingment to assign values to
+            a b and c in one line
+
+        HandleClick
+        -   add a parameter i rather than getting i from this
+            -   this now refers to the class not the square
+        -   remove the local variable i
+        -   add a local variable to refer to the clicked square
+            -   remember that squares have an integer id 0 - 8
+    */
 }
 
-//
-function highlightWinner() {
-
-    // Update the status in the UI to display the winner
-    if (xIsNext) {
-        document.getElementById("status").innerHTML = "👻 WINS!!"
-    } else {
-        document.getElementById("status").innerHTML = "🎃 WINS!!"
-    }
-    // Iterate through the winningLine array.  It contains the indices of the winning squares
-    //      get the next square using the current index in the winningLine array as the id
-    //      add the class red to the square
-
-    for (var i = 0; i < winningLine.length; i++) {
-        var squareIndex = winningLine[i];
-        document.getElementById(squareIndex).classList.add("red");
-    }
-    // Disable all of the squares -- Already done. Look at line 61
-
-}
-
-function disableAll() {
-
-    // Set the onclick handler for all squares to a function that does nothing
-    // The id of the square is a number 0 - 8
-
-    for (var i = 0; i < squares.length; i++) {
-        document.getElementById(i).onclick = function(){}
-    }
-
-}
-
-// When the page has finished loading, call the function init   
-window.onload = init; 
+// declare a variable ttt
+let ttt;
+// add an onload handler to the window that assigns ttt to a TTT
+window.onload = () => {ttt = new TTT();}
